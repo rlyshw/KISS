@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -38,15 +39,17 @@ public class SearchResult extends Result {
     public void doLaunch(Context context, View v) {
         Intent search = new Intent(Intent.ACTION_WEB_SEARCH);
         search.putExtra(SearchManager.QUERY, searchPojo.query);
+        Log.i("log", "Searching " + Uri.parse("https://duckduckgo.com/?q=") + searchPojo.query);
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://duckduckgo.com/?q="+ searchPojo.query));
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             // In the latest Google Now version, ACTION_WEB_SEARCH is broken when used with FLAG_ACTIVITY_NEW_TASK.
             // Adding FLAG_ACTIVITY_CLEAR_TASK seems to fix the problem.
-            search.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            browserIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         }
         search.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         try {
-            context.startActivity(search);
+            context.startActivity(browserIntent);
         } catch (ActivityNotFoundException e) {
             // This exception gets thrown if Google Search has been deactivated:
             Uri uri = Uri.parse("https://encrypted.google.com/search?q=" + searchPojo.query);
